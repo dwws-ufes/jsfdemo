@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" 
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:adm="http://github.com/adminfaces"
+	template="/WEB-INF/templates/template.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="#{msgsSubsystem['manageMyObjects.title']}" />
+	</ui:define>
+
+	<ui:define name="description">
+		<h:outputText value="#{msgsSubsystem['manageMyObjects.title.description']}" />
+	</ui:define>
+
+    <ui:define name="body">
+        <adm:breadcrumb link="/core/manageMyObjects/index" title="#{msgsSubsystem['manageMyObjects.title']}" />
+
+        <p><h:outputText value="#{msgsSubsystem['manageMyObjects.text.explanation.simple']}" /></p>
+
+        <h:form id="form">
+            <!-- The listing. -->
+            <p:panel header="#{msgsSubsystem['manageMyObjects.text.entities']}" styleClass="card no-border">
+                <p:dataTable id="dt-entities" widgetVar="dtEntities" var="entity" value="#{manageMyObjectsController.entities}" emptyMessage="#{msgsSubsystem['manageMyObjects.text.emptyMessage']}" reflow="true" selection="#{manageMyObjectsController.selectedEntities}" rowKey="#{entity.id}" paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom">
+                    <p:ajax event="filter" ignoreAutoUpdate="true" />
+                    <f:facet name="footer">
+                        <!-- New and Delete buttons. -->
+                        <div style="float: right; margin-top: -40px;">
+                            <p:commandButton value="#{msgs['jbutler.crud.button.create']}" icon="pi pi-plus" actionListener="#{manageMyObjectsController.openNew}" update=":form:manage-entity-content" oncomplete="PF('formDialog').show()" style="margin-right: .5rem">
+                                <p:resetInput target=":form:manage-entity-content" />
+                            </p:commandButton>
+                            <p:commandButton id="delete-entities-button" value="#{msgs['jbutler.crud.button.delete']}" icon="pi pi-trash" actionListener="#{manageMyObjectsController.deleteSelectedEntities}" disabled="#{!manageMyObjectsController.hasSelectedEntities()}" update="@this">
+                                <p:confirm header="#{msgs['jbutler.crud.title.confirmation']}" message="#{msgsSubsystem['manageMyObjects.text.deleteConfirmation']}" icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </div>
+                    </f:facet>
+
+                    <p:ajax event="rowSelect" update="delete-entities-button" />
+                    <p:ajax event="rowUnselect" update="delete-entities-button" />
+                    <p:ajax event="rowSelectCheckbox" update="delete-entities-button" />
+                    <p:ajax event="rowUnselectCheckbox" update="delete-entities-button" />
+                    <p:ajax event="toggleSelect" update="delete-entities-button" />            
+
+                    <p:column width="40" selectionMode="multiple" exportable="false"></p:column>
+
+                    <!-- My Object data. -->
+                    <p:column headerText="#{msgsSubsystem['manageMyObjects.field.myString']}" sortBy="#{entity.myString}" filterBy="#{entity.myString}" filterStyle="display: none">
+                        <h:outputText value="#{entity.myString}" />
+                    </p:column>
+                    <p:column headerText="#{msgsSubsystem['manageMyObjects.field.myNumber']}" sortBy="#{entity.myNumber}">
+                        <h:outputText value="#{entity.myNumber}" />
+                    </p:column>
+                    <p:column headerText="#{msgsSubsystem['manageMyObjects.field.myDate']}" sortBy="#{entity.myDate}">
+                        <h:outputText value="#{entity.myDate}">
+                            <f:convertDateTime type="localDate" pattern="#{msgs['jbutler.format.date.java']}" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column exportable="false" style="text-align: center;">
+                        <f:facet name="header">
+                            <i class="pi pi-search"></i>
+                            <p:inputText id="globalFilter" onkeyup="PF('dtEntities').filter()" placeholder="#{msgs['jbutler.crud.text.search']}" style="margin-left: 10px;" />
+                        </f:facet>
+                        <p:commandButton icon="pi pi-pencil" update=":form:manage-entity-content" oncomplete="PF('formDialog').show()" process="@this">
+                            <f:setPropertyActionListener value="#{entity}" target="#{manageMyObjectsController.selectedEntity}" />
+                            <p:resetInput target=":form:manage-entity-content" />
+                        </p:commandButton>
+                        <p:commandButton icon="pi pi-trash" process="@this" oncomplete="PF('deleteEntityDialog').show()">
+                            <f:setPropertyActionListener value="#{entity}" target="#{manageMyObjectsController.selectedEntity}" />
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <!-- Dialog to create new entities or update existing ones. -->
+            <p:dialog header="#{msgsSubsystem['manageMyObjects.title.detail']}" showEffect="fade" widgetVar="formDialog" responsive="true" width="450" modal="true">
+                <p:outputPanel id="manage-entity-content">
+                    <p:outputPanel rendered="#{not empty manageMyObjectsController.selectedEntity}">
+                        <p:panelGrid columns="2" cellpadding="5" layout="grid" styleClass="ui-fluid card" columnClasses="ui-grid-col-4,ui-grid-col-8">
+                            <p:outputLabel for="myStringField" value="#{msgsSubsystem['manageMyObjects.field.myString']}" />
+                            <h:panelGroup id="myStringGroup">
+                                <p:message for="myStringField" />
+                                <p:inputText id="myStringField" value="#{manageMyObjectsController.selectedEntity.myString}" required="true">
+                                    <p:ajax event="blur" process="@this" update="myStringGroup" />
+                                </p:inputText>
+                            </h:panelGroup>
+
+                            <p:outputLabel for="myNumberField" value="#{msgsSubsystem['manageMyObjects.field.myNumber']}" />
+                            <h:panelGroup id="myNumberGroup">
+                                <p:message for="myNumberField" />
+                                <p:inputNumber id="myNumberField" value="#{manageMyObjectsController.selectedEntity.myNumber}" decimalPlaces="0" />
+                            </h:panelGroup>
+
+                            <p:outputLabel for="myBooleanField" value="#{msgsSubsystem['manageMyObjects.field.myBoolean']}" />
+                            <p:selectBooleanCheckbox id="myBooleanField" value="#{manageMyObjectsController.selectedEntity.myBoolean}" />
+
+                            <p:outputLabel for="myDateField" value="#{msgsSubsystem['manageMyObjects.field.myDate']}" />
+                            <p:datePicker id="myDateField" value="#{manageMyObjectsController.selectedEntity.myDate}" pattern="#{msgs['jbutler.format.date.java']}" showButtonBar="true" mask="true" />
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:outputPanel>
+
+                <f:facet name="footer">
+                    <p:commandButton value="#{msgs['jbutler.crud.button.save']}" icon="pi pi-check" actionListener="#{manageMyObjectsController.save}" update="manage-entity-content" process="manage-entity-content @this" oncomplete="if(!args.validationError) PF('formDialog').hide();" />
+                    <p:commandButton value="#{msgs['jbutler.crud.button.cancel']}" icon="pi pi-times" onclick="PF('formDialog').hide()" />
+                </f:facet>
+            </p:dialog>
+
+            <!-- Dialog to confirm deletion. -->
+            <p:confirmDialog widgetVar="deleteEntityDialog" showEffect="fade" width="300" message="#{msgsSubsystem['manageMyObjects.text.deleteConfirmation']}" header="#{msgs['jbutler.crud.title.confirmation']}" severity="warn">
+                <p:commandButton value="#{msgs['jbutler.crud.button.yes']}" icon="pi pi-check" actionListener="#{manageMyObjectsController.delete}" process="@this" oncomplete="PF('deleteEntityDialog').hide()" />
+                <p:commandButton value="#{msgs['jbutler.crud.button.no']}" type="button" icon="pi pi-times" onclick="PF('deleteEntityDialog').hide()" />
+            </p:confirmDialog>
+
+            <!-- Global dialog used by p:confirm tags. -->
+            <p:confirmDialog global="true" showEffect="fade" width="300">
+                <p:commandButton value="#{msgs['jbutler.crud.button.no']}" type="button" icon="pi pi-times" styleClass="ui-confirmdialog-no" />
+                <p:commandButton value="#{msgs['jbutler.crud.button.yes']}" type="button" icon="pi pi-check" styleClass="ui-confirmdialog-yes" />
+            </p:confirmDialog>
+
+            <!-- A button that creates 10 random objects to test pagination. -->
+            <p:panel styleClass="box-primary card">
+                <p:commandButton id="create-random-entities-button" value="#{msgsSubsystem['manageMyObjects.button.createRandomObjects']}" icon="pi pi-plus" actionListener="#{manageMyObjectsController.createRandomObjects}">
+                    <p:confirm header="#{msgsSubsystem['manageMyObjects.text.createRandomObjects.confirmation.title']}" message="#{msgsSubsystem['manageMyObjects.text.createRandomObjects.confirmation']}" icon="pi pi-question" />
+                </p:commandButton>
+            </p:panel>
+        </h:form>
+    </ui:define>    
+</ui:composition>

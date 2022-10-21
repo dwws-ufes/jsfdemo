@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" 
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:adm="http://github.com/adminfaces"
+	template="/WEB-INF/templates/template.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="Search" />
+	</ui:define>
+
+	<ui:define name="description">
+		<h:outputText value="Search for MyObjects" />
+	</ui:define>
+
+	<ui:define name="body">
+		<!-- Clear the breadcrumb. -->
+		<adm:breadcrumb title="" clear="true" />
+
+		<h:form id="form">
+			<p>Object ID: <h:outputText value="#{flash.searchController.objectId}" /></p>
+			<p>My String: <h:outputText value="#{flash.searchController.result.myString}" /></p>
+			<p>My Number: <h:outputText value="#{flash.searchController.result.myNumber}" /></p>
+			<p>My Boolean: <h:outputText value="#{flash.searchController.result.myBoolean}" /></p>
+			<p>My Date: <h:outputText value="#{flash.searchController.result.myDate}">
+				<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+			</h:outputText></p>
+
+			<p:linkButton outcome="index" value="Back" />
+		</h:form>
+	</ui:define>
+</ui:composition>
+

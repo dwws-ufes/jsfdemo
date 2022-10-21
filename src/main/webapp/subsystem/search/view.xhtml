@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" 
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:adm="http://github.com/adminfaces"
+	template="/WEB-INF/templates/template.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="Search" />
+	</ui:define>
+
+	<ui:define name="description">
+		<h:outputText value="Search for MyObjects" />
+	</ui:define>
+
+	<ui:define name="body">
+		<!-- Clear the breadcrumb. -->
+		<adm:breadcrumb title="" clear="true" />
+
+		<h:form id="form">
+			<p>MyObject: <p:selectOneMenu id="myObject" value="#{searchController.result}" converter="#{searchController.myObjectConverter}">
+				<f:selectItem itemLabel="Select an object" noSelectionOption="true"/>
+				<f:selectItems value="#{searchController.existingMyObjects}" var="obj" itemLabel="#{obj.myString}" itemValue="#{obj}" />
+			</p:selectOneMenu></p>
+
+			<p><p:commandButton value="View" action="#{searchController.view}" /></p>
+		</h:form>
+	</ui:define>
+</ui:composition>
+

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" 
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:adm="http://github.com/adminfaces"
+	template="/WEB-INF/templates/template.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="Create" />
+	</ui:define>
+
+	<ui:define name="description">
+		<h:outputText value="Create a new MyObject" />
+	</ui:define>
+
+	<ui:define name="body">
+		<!-- Clear the breadcrumb. -->
+		<adm:breadcrumb title="" clear="true" />
+
+		<h:form id="form">
+			<p>My String: <p:inputText id="myStringField" value="#{createNewObjectController.myObject.myString}" required="true">
+				<f:validator validatorId="cpfValidator" />
+			</p:inputText> <p:message for="myStringField" /></p>
+
+			<p>My Number: <p:inputText id="myNumberField" value="#{createNewObjectController.myObject.myNumber}">
+				<f:validateLongRange minimum="0" maximum="100" />
+			</p:inputText> <p:message for="myNumberField" /></p>
+
+			<p>My Boolean: <p:selectBooleanCheckbox id="myBooleanField" value="#{createNewObjectController.myObject.myBoolean}" /></p>
+
+			<p>My Date: <p:inputText id="myDateField" value="#{createNewObjectController.myObject.myDate}">
+				<f:convertDateTime type="localDate" pattern="dd/MM/yyyy" />
+			</p:inputText> <p:message for="myDateField" /></p>
+
+			<p:commandButton action="#{createNewObjectController.create}" value="Create" update="@form" />
+		</h:form>
+	</ui:define>
+</ui:composition>
+
